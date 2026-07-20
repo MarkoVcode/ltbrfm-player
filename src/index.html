@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>LTBR·FM — Receiver</title>
+  <link rel="stylesheet" href="./styles.css" />
+</head>
+<body>
+
+<div class="unit">
+  <span class="screw tl"></span><span class="screw tr"></span>
+  <span class="screw bl"></span><span class="screw br"></span>
+
+  <div class="face">
+
+    <div class="brand-row">
+      <div class="brand">LTBR<em>·</em>FM</div>
+      <div class="strap">London Tower Block Radio</div>
+      <div class="tx" id="txState"><span class="led"></span><span id="txLabel">Standby</span></div>
+    </div>
+
+    <div class="windows">
+      <div class="window w-scroll"><canvas id="scroller" height="46"></canvas></div>
+      <div class="window w-spec"><canvas id="spectrum" height="78"></canvas></div>
+    </div>
+
+    <div class="transport">
+      <div class="keys">
+        <button class="key" id="btnPlay" aria-pressed="false" title="Play / Pause (Space)" aria-label="Play">
+          <svg viewBox="0 0 24 24" id="icoPlay"><path d="M7 4l13 8-13 8z"/></svg>
+        </button>
+        <button class="key" id="btnStop" title="Stop" aria-label="Stop">
+          <svg viewBox="0 0 24 24"><path d="M5 5h14v14H5z"/></svg>
+        </button>
+        <button class="key" id="btnMute" aria-pressed="false" title="Mute (M)" aria-label="Mute">
+          <svg viewBox="0 0 24 24" id="icoVol"><path d="M4 9v6h4l5 4V5L8 9H4z"/><path d="M16 8.5c1.4 1 1.4 6 0 7" fill="none" stroke="currentColor" stroke-width="1.8"/></svg>
+        </button>
+      </div>
+
+      <div class="meta">
+        <span class="lbl">Receiving</span>
+        <span class="val" id="metaVal">— no carrier —</span>
+      </div>
+
+      <div class="vol">
+        <span class="lbl">Level</span>
+        <div class="fader-h" id="volFader" tabindex="0" role="slider"
+             aria-label="Volume" aria-valuemin="0" aria-valuemax="100" aria-valuenow="80">
+          <div class="slot"></div><div class="cap"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="eq">
+      <div class="eq-head">
+        <span class="title">Graphic Equaliser</span>
+        <div class="presets">
+          <button class="chip" data-preset="flat">Flat</button>
+          <button class="chip" data-preset="pirate">Pirate</button>
+          <button class="chip" data-preset="bass">Bass</button>
+          <button class="chip" data-preset="voice">Voice</button>
+        </div>
+      </div>
+      <div class="bands" id="bands"></div>
+    </div>
+
+    <div class="source">
+      <label for="streamUrl">Stream</label>
+      <input id="streamUrl" type="url" spellcheck="false"
+             value="https://stream.ltbr.fm/live"
+             placeholder="https://…" />
+      <button class="tune" id="btnTune">Tune</button>
+    </div>
+
+    <div class="fault" id="fault" role="status" aria-live="polite"></div>
+
+  </div>
+</div>
+
+<script type="module" src="./main.ts"></script>
+</body>
+</html>

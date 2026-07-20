@@ -1,0 +1,19 @@
+# Node / frontend
+node_modules
+dist
+.vite
+
+# Rust / Tauri
+src-tauri/target
+src-tauri/gen
+
+# Generated icon raster (source of truth is icon-source.svg)
+icon-source.png
+
+# Editors / OS
+.DS_Store
+Thumbs.db
+*.log
+.idea
+.vscode/*
+!.vscode/extensions.json
