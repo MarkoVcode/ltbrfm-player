@@ -1,6 +1,6 @@
 [package]
 name = "ltbrfm-player"
-version = "0.1.3"
+version = "0.1.4"
 description = "LTBR·FM Receiver — cross-platform Icecast radio player with graphic EQ and spectrum analyser"
 authors = ["LTBR·FM"]
 edition = "2021"
