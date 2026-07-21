@@ -18,15 +18,13 @@
 button{ appearance:none; -webkit-appearance:none }
 
 html,body{height:100%}
-/* Frameless window: the page is transparent, the rack unit IS the app. */
+/* Frameless window, tightly framed: the rack unit fills the window exactly —
+   no transparent margin, no halo. */
 body{
   margin:0;
-  background:transparent;
+  background:var(--ink);
   color:var(--concrete);
   font-family:ui-sans-serif,system-ui,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
-  display:flex;
-  align-items:center;
-  justify-content:center;
   padding:0;
   overflow:hidden;
   -webkit-font-smoothing:antialiased;
@@ -38,16 +36,13 @@ body{
 
 .unit{
   width:100%;
-  max-width:720px;
+  height:100%;
   background:
     linear-gradient(180deg, var(--face-hi) 0%, var(--face) 8%, var(--face) 92%, var(--face-lo) 100%);
   border:1px solid #0a0908;
-  border-radius:5px;
   box-shadow:
     0 1px 0 rgba(255,255,255,.06) inset,
-    0 -1px 0 rgba(0,0,0,.5) inset,
-    0 24px 60px rgba(0,0,0,.65),
-    0 2px 0 rgba(0,0,0,.4);
+    0 -1px 0 rgba(0,0,0,.5) inset;
   position:relative;
   overflow:hidden;
 }
