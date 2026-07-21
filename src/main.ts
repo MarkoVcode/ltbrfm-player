@@ -202,6 +202,39 @@ let nowPlaying = "";
 const PLAY_PATH = "M7 4l13 8-13 8z";
 const PAUSE_PATH = "M6 4h4v16H6zM14 4h4v16h-4z";
 
+// ---- update-available indicator --------------------------------------------
+
+let updateAvailable = false;
+
+function refreshTx() {
+  txState.classList.toggle("update", updateAvailable);
+  txLabel.textContent = updateAvailable ? "New version" : "Standby";
+  if (updateAvailable) {
+    txState.setAttribute("role", "button");
+    txState.setAttribute("tabindex", "0");
+    txState.title = "A new version is available — click to download";
+  } else {
+    txState.removeAttribute("role");
+    txState.removeAttribute("tabindex");
+    txState.title = "";
+  }
+}
+
+txState.addEventListener("click", () => {
+  if (updateAvailable) cmd("open_download_page");
+});
+txState.addEventListener("keydown", (e) => {
+  if (updateAvailable && (e.key === "Enter" || e.key === " ")) {
+    e.preventDefault();
+    cmd("open_download_page");
+  }
+});
+
+listen<{ version: string }>("update_available", () => {
+  updateAvailable = true;
+  refreshTx();
+});
+
 function hostOf(u: string): string {
   try {
     return new URL(u).hostname;
@@ -219,8 +252,9 @@ function applyState(s: typeof engineState, message?: string) {
   txState.classList.toggle("live", s === "live");
   txState.classList.toggle("tuning", s === "tuning");
   // The label always reads "Standby"; only the LED signals state
-  // (solid red = idle, pulsing red = on air).
-  txLabel.textContent = "Standby";
+  // (solid red = idle, pulsing red = on air). An available update
+  // overrides the block with the amber "New version" alert.
+  refreshTx();
 
   btnPlay.setAttribute("aria-pressed", String(s === "live" || s === "tuning"));
   icoPlay.querySelector("path")!.setAttribute("d", playing ? PAUSE_PATH : PLAY_PATH);

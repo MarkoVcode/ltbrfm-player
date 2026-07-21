@@ -153,6 +153,21 @@ body{
   50%{ opacity:.35 }
 }
 
+/* ---------- Update-available indicator ---------- */
+/* When a newer release exists the TX block flips to an amber alert:
+   info logo + rapidly blinking amber LED + "New version", clickable. */
+.tx .info{ display:none; width:11px; height:11px; color:var(--amber) }
+.tx.update{ color:var(--amber); cursor:pointer }
+.tx.update .info{ display:block }
+.tx.update .led{
+  background:var(--amber);
+  box-shadow:0 0 7px rgba(255,155,33,.8), 0 0 0 1px rgba(0,0,0,.4) inset;
+  animation:updateblink .4s steps(2,end) infinite;
+}
+@keyframes updateblink{ 50%{ opacity:.12 } }
+.tx.update:hover #txLabel{ text-decoration:underline; text-underline-offset:2px }
+.tx.update:focus-visible{ outline:2px solid var(--focus); outline-offset:3px; border-radius:2px }
+
 /* ---------- Power key ---------- */
 
 button.power{

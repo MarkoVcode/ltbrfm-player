@@ -7,6 +7,7 @@ pub mod engine;
 pub mod output;
 pub mod spectrum;
 pub mod stream;
+pub mod update;
 
 use engine::{Engine, PRESETS};
 use tauri::{Manager, State};
@@ -56,12 +57,18 @@ fn apply_preset(engine: State<Engine>, name: String) {
     }
 }
 
+#[tauri::command]
+fn open_download_page() {
+    update::open_download_page();
+}
+
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
     tauri::Builder::default()
         .setup(|app| {
             let engine = Engine::new(app.handle().clone());
             app.manage(engine);
+            update::spawn_checker(app.handle().clone());
             Ok(())
         })
         .invoke_handler(tauri::generate_handler![
@@ -73,6 +80,7 @@ pub fn run() {
             set_eq_band,
             set_preamp,
             apply_preset,
+            open_download_page,
         ])
         .run(tauri::generate_context!())
         .expect("error while running LTBR·FM Receiver");
