@@ -49,12 +49,18 @@ body{
   position:relative;
   overflow:hidden;
 }
-/* brushed metal grain */
+/* Soft metal sheen. A 1px repeating-gradient "grain" aliases into heavy
+   moiré stripes on some webview renderers (notably Linux/WebKitGTK), so we
+   use a smooth, non-repeating edge highlight instead — same brushed feel,
+   no lines. */
 .unit::before{
   content:"";
   position:absolute; inset:0;
-  background:repeating-linear-gradient(90deg,
-    rgba(255,255,255,.014) 0 1px, rgba(0,0,0,.014) 1px 2px);
+  background:linear-gradient(90deg,
+    rgba(255,255,255,.035) 0%,
+    rgba(255,255,255,0) 14%,
+    rgba(255,255,255,0) 86%,
+    rgba(0,0,0,.06) 100%);
   pointer-events:none;
 }
 
