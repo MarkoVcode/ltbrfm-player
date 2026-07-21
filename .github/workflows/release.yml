@@ -90,7 +90,22 @@ jobs:
         with:
           tagName: ${{ github.ref_name }}
           releaseName: "LTBR·FM Receiver ${{ github.ref_name }}"
-          releaseBody: "Download the installer for your platform below. See the assets for `.dmg` (macOS), `.msi`/`.exe` (Windows) and `.AppImage`/`.deb`/`.rpm` (Linux)."
+          # NOTE: update this body as part of each release's prep commit.
+          releaseBody: |
+            ### What's new
+
+            - **Fixed: the dot-matrix scrolling display now renders identically on every OS.**
+              It previously rasterised system fonts at 7px, so the dot pattern depended on each
+              platform's font stack and antialiasing — garbled to a different degree on Linux,
+              Windows and macOS. The scroller now uses a built-in 5×7 LED bitmap font
+              (A–Z, 0–9, punctuation; accents and typographic quotes normalised), making the
+              display pixel-identical and crisp everywhere.
+
+            ### Downloads
+
+            `.dmg` (macOS — Apple Silicon & Intel) · `.msi` / `-setup.exe` (Windows) ·
+            `.AppImage` / `.deb` / `.rpm` (Linux). Builds are unsigned — on macOS use
+            right-click → Open on first launch; on Windows choose "More info → Run anyway".
           releaseDraft: true
           prerelease: false
           args: ${{ matrix.args }}
