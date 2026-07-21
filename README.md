@@ -4,6 +4,10 @@ A rock-solid, cross-platform desktop radio player for the **London Tower Block
 Radio** Icecast stream — with a functional 10-band graphic equaliser and a live
 LED spectrum analyser, wrapped in a brushed-metal "rack unit" interface.
 
+**🔊 Listen right now, no install needed:** the station's web player lives at
+**[www.ltbr.fm/player](https://www.ltbr.fm/player)** — this app is its
+desktop counterpart, downloadable from the same page.
+
 ![built with Tauri](https://img.shields.io/badge/built%20with-Tauri%202-24C8DB)
 ![Rust](https://img.shields.io/badge/audio%20engine-Rust-orange)
 
