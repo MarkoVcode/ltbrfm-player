@@ -30,9 +30,15 @@ impl Output {
         let channels = config.channels as usize;
         let sample_rate = config.sample_rate.0;
 
-        // ~2 seconds of slack to ride out network jitter.
-        let capacity = (sample_rate as usize) * channels * 2;
-        let (prod, cons) = HeapRb::<f32>::new(capacity).split();
+        // This buffer sits AFTER the DSP, so its depth is exactly the latency
+        // between moving a slider (or computing the spectrum) and hearing it.
+        // Keep it short — network jitter is absorbed upstream in the compressed
+        // BytePipe, before decoding — so controls feel immediate. ~150 ms is
+        // small enough to feel instant yet large enough to never underrun given
+        // typical 10–40 ms audio callback periods.
+        const RING_MS: usize = 150;
+        let capacity = (sample_rate as usize) * channels * RING_MS / 1000;
+        let (prod, cons) = HeapRb::<f32>::new(capacity.max(1024)).split();
 
         let stream = match sample_format {
             cpal::SampleFormat::F32 => build::<f32>(&device, &config, cons),
