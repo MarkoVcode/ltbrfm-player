@@ -474,12 +474,32 @@ listen<number[]>("spectrum", (e) => setSpectrum(e.payload));
 // platform (WebKitGTK renders text more compactly than macOS/Windows), so a
 // hard-coded height leaves a bottom margin on some systems and clips on
 // others. Measure the real content and size the window to it exactly.
-async function fitWindow() {
+//
+// Measuring is only trustworthy once the bundled fonts are loaded AND the
+// webview viewport has caught up with the native window — at boot (notably
+// macOS/WKWebView) the first frames render before either is true, and a
+// measurement taken then sees a wrapped layout and locks in a squeezed
+// window. Wait for both, and take the width from the native window, never
+// from the viewport.
+async function fitWindow(attempt = 0) {
   const face = document.querySelector(".face") as HTMLElement;
   if (!face) return;
+  await document.fonts.ready;
+  const win = getCurrentWindow();
+  const width = (await win.innerSize()).toLogical(await win.scaleFactor()).width;
+  if (Math.abs(window.innerWidth - width) > 1) {
+    // Viewport not settled yet — retry for up to ~1s, else leave the
+    // configured size alone rather than resize from a bad measurement.
+    if (attempt < 60) {
+      requestAnimationFrame(() => {
+        fitWindow(attempt + 1).catch((e) => console.error("fitWindow failed:", e));
+      });
+    }
+    return;
+  }
   const target = Math.ceil(face.offsetHeight) + 2; // + unit border
   if (Math.abs(window.innerHeight - target) > 1) {
-    await getCurrentWindow().setSize(new LogicalSize(window.innerWidth, target));
+    await win.setSize(new LogicalSize(width, target));
   }
 }
 
