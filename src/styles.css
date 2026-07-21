@@ -1,3 +1,21 @@
+/* Bundled fonts (SIL OFL licensed): identical text metrics on every OS, so
+   layout and alignment can never drift between platform font stacks. */
+@font-face{
+  font-family:"Inter";
+  src:url("./fonts/inter-400.woff2") format("woff2");
+  font-weight:400; font-style:normal; font-display:block;
+}
+@font-face{
+  font-family:"Inter";
+  src:url("./fonts/inter-900.woff2") format("woff2");
+  font-weight:900; font-style:normal; font-display:block;
+}
+@font-face{
+  font-family:"LTBR Mono";
+  src:url("./fonts/jetbrains-mono-400.woff2") format("woff2");
+  font-weight:400; font-style:normal; font-display:block;
+}
+
 :root{
   --rack:#151310;
   --face:#2a2521;
@@ -24,7 +42,7 @@ body{
   margin:0;
   background:var(--ink);
   color:var(--concrete);
-  font-family:ui-sans-serif,system-ui,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  font-family:"Inter",ui-sans-serif,system-ui,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
   padding:0;
   overflow:hidden;
   -webkit-font-smoothing:antialiased;
@@ -122,6 +140,10 @@ body{
   width:8px;height:8px;border-radius:50%;
   background:var(--red);
   box-shadow:0 0 6px rgba(255,63,28,.7), 0 0 0 1px rgba(0,0,0,.4) inset;
+  /* Optical centering against Inter's uppercase glyph band (caps sit ~0.5px
+     above the em-box center at 9px / line-height 1). Safe to hardcode now the
+     font is bundled — the metrics are identical on every platform. */
+  transform:translateY(-0.5px);
 }
 .tx.live .led{
   animation:ledpulse 2.4s ease-in-out infinite;
@@ -224,7 +246,7 @@ button.key svg{ width:15px;height:15px; fill:currentColor }
 .meta{ display:flex; flex-direction:column; gap:3px; min-width:0 }
 .meta .lbl{ font-size:8px; letter-spacing:.3em; text-transform:uppercase; color:var(--concrete-dim) }
 .meta .val{
-  font-family:ui-monospace,"SF Mono",Menlo,Consolas,monospace;
+  font-family:"LTBR Mono",ui-monospace,"SF Mono",Menlo,Consolas,monospace;
   font-size:12px; color:#cfc5b6; letter-spacing:.05em;
   white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
 }
@@ -292,11 +314,11 @@ button.chip:focus-visible{ outline:2px solid var(--focus); outline-offset:2px }
 .bands{ display:flex; gap:6px; align-items:flex-end; justify-content:space-between }
 .band{ display:flex; flex-direction:column; align-items:center; gap:7px; flex:1 }
 .band .hz{
-  font-family:ui-monospace,"SF Mono",Menlo,Consolas,monospace;
+  font-family:"LTBR Mono",ui-monospace,"SF Mono",Menlo,Consolas,monospace;
   font-size:9px; color:var(--concrete-dim); letter-spacing:.02em;
 }
 .band .db{
-  font-family:ui-monospace,"SF Mono",Menlo,Consolas,monospace;
+  font-family:"LTBR Mono",ui-monospace,"SF Mono",Menlo,Consolas,monospace;
   font-size:9px; color:var(--amber-dim); min-height:11px;
 }
 .band.active .db{ color:var(--amber) }
@@ -323,7 +345,7 @@ button.chip:focus-visible{ outline:2px solid var(--focus); outline-offset:2px }
   background:var(--ink); border:1px solid #0a0908; border-radius:2px;
   box-shadow:0 1px 3px rgba(0,0,0,.8) inset;
   color:var(--amber); height:22px; padding:0 10px; line-height:20px;
-  font-family:ui-monospace,"SF Mono",Menlo,Consolas,monospace; font-size:11px;
+  font-family:"LTBR Mono",ui-monospace,"SF Mono",Menlo,Consolas,monospace; font-size:11px;
   user-select:text; -webkit-user-select:text;
 }
 .source input:focus{ outline:2px solid var(--focus); outline-offset:1px }
@@ -339,7 +361,7 @@ button.tune:focus-visible{ outline:2px solid var(--focus); outline-offset:2px }
 
 .fault{
   margin-top:12px; font-size:11px; color:var(--red);
-  font-family:ui-monospace,monospace; letter-spacing:.02em;
+  font-family:"LTBR Mono",ui-monospace,monospace; letter-spacing:.02em;
   min-height:15px;
 }
 
