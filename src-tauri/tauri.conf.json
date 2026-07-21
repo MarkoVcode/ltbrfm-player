@@ -11,14 +11,17 @@
   },
   "app": {
     "withGlobalTauri": false,
+    "macOSPrivateApi": true,
     "windows": [
       {
         "title": "LTBR·FM Receiver",
         "width": 760,
-        "height": 700,
-        "minWidth": 380,
-        "minHeight": 560,
-        "resizable": true,
+        "height": 580,
+        "resizable": false,
+        "maximizable": false,
+        "decorations": false,
+        "transparent": true,
+        "shadow": false,
         "fullscreen": false,
         "center": true
       }

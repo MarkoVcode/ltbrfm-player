@@ -8,6 +8,7 @@
 
 import { invoke } from "@tauri-apps/api/core";
 import { listen } from "@tauri-apps/api/event";
+import { getCurrentWindow } from "@tauri-apps/api/window";
 import {
   initVisuals,
   setScroll,
@@ -306,6 +307,36 @@ document.addEventListener("keydown", (e) => {
   }
   if (e.key.toLowerCase() === "m") (btnMute as HTMLButtonElement).click();
 });
+
+// ---- frameless window: power off + drag regions ----------------------------
+
+// Power key: ramp the audio down (the engine's smoothed stop avoids a pop),
+// then close the window, which exits the app.
+document.getElementById("btnPower")!.addEventListener("click", () => {
+  cmd("stop");
+  setTimeout(() => {
+    getCurrentWindow()
+      .close()
+      .catch(() => window.close());
+  }, 150);
+});
+
+// The window has no titlebar, so the faceplate itself is the drag handle.
+// data-tauri-drag-region only fires when the clicked element ITSELF carries
+// the attribute, so interactive children (buttons, faders, input) stay live.
+const DRAG_REGIONS = [
+  ".unit", ".face", ".brand-row", ".brand", ".strap",
+  ".windows", ".window", "canvas",
+  ".transport", ".keys", ".meta", ".meta .lbl", ".meta .val", ".vol", ".vol .lbl",
+  ".eq", ".eq-head", ".eq-head .title", ".presets", ".bands", ".band",
+  ".band .hz", ".band .db", ".rule",
+  ".source", ".source label", ".fault", ".tx", ".screw",
+];
+for (const sel of DRAG_REGIONS) {
+  document.querySelectorAll<HTMLElement>(sel).forEach((el) => {
+    el.setAttribute("data-tauri-drag-region", "");
+  });
+}
 
 // ---- engine events ---------------------------------------------------------
 
