@@ -106,6 +106,6 @@ jobs:
             `.dmg` (macOS — Apple Silicon & Intel) · `.msi` / `-setup.exe` (Windows) ·
             `.AppImage` / `.deb` / `.rpm` (Linux). Builds are unsigned — on macOS use
             right-click → Open on first launch; on Windows choose "More info → Run anyway".
-          releaseDraft: true
+          releaseDraft: false
           prerelease: false
           args: ${{ matrix.args }}
