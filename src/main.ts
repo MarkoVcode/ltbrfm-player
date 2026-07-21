@@ -314,6 +314,23 @@ btnMute.addEventListener("click", () => {
   cmd("set_mute", { muted });
 });
 
+// EQ show/hide — audio is untouched (the DSP keeps its settings); only the
+// panel collapses, and the window re-fits to the new content height.
+const btnEq = document.getElementById("btnEq")!;
+const eqSection = document.querySelector<HTMLElement>(".eq")!;
+let eqVisible = true;
+
+function setEqVisible(v: boolean) {
+  eqVisible = v;
+  eqSection.classList.toggle("hidden", !v);
+  btnEq.setAttribute("aria-pressed", String(v));
+  requestAnimationFrame(() => {
+    fitWindow().catch((e) => console.error("fitWindow failed:", e));
+  });
+}
+
+btnEq.addEventListener("click", () => setEqVisible(!eqVisible));
+
 document.getElementById("btnTune")!.addEventListener("click", () => {
   const url = streamUrl.value.trim();
   if (!url) {
@@ -341,6 +358,7 @@ document.addEventListener("keydown", (e) => {
     else play();
   }
   if (e.key.toLowerCase() === "m") (btnMute as HTMLButtonElement).click();
+  if (e.key.toLowerCase() === "e") (btnEq as HTMLButtonElement).click();
 });
 
 // ---- frameless window: power off + drag regions ----------------------------
