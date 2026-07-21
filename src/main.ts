@@ -9,6 +9,7 @@
 import { invoke } from "@tauri-apps/api/core";
 import { listen } from "@tauri-apps/api/event";
 import { getCurrentWindow } from "@tauri-apps/api/window";
+import { LogicalSize } from "@tauri-apps/api/dpi";
 import {
   initVisuals,
   setScroll,
@@ -362,5 +363,21 @@ listen<number[]>("spectrum", (e) => setSpectrum(e.payload));
 
 // ---- boot ------------------------------------------------------------------
 
+// Fit the window to the faceplate's natural height. Font metrics differ per
+// platform (WebKitGTK renders text more compactly than macOS/Windows), so a
+// hard-coded height leaves a bottom margin on some systems and clips on
+// others. Measure the real content and size the window to it exactly.
+async function fitWindow() {
+  const face = document.querySelector(".face") as HTMLElement;
+  if (!face) return;
+  const target = Math.ceil(face.offsetHeight) + 2; // + unit border
+  if (Math.abs(window.innerHeight - target) > 1) {
+    await getCurrentWindow().setSize(new LogicalSize(window.innerWidth, target));
+  }
+}
+
 initVisuals();
 applyState("standby");
+requestAnimationFrame(() => {
+  fitWindow().catch((e) => console.error("fitWindow failed:", e));
+});

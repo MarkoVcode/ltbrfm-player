@@ -105,6 +105,12 @@ body{
   display:flex; align-items:center; gap:7px;
   font-size:9px; letter-spacing:.28em; text-transform:uppercase;
   color:var(--concrete-dim);
+  /* Engine-stable alignment: baseline of a flex box whose first item is an
+     empty span (the LED) is synthesized differently per engine, and
+     line-height:normal varies per platform font — both shifted the LED
+     on WebKitGTK. Center the block and tighten the line box instead. */
+  align-self:center;
+  line-height:1;
 }
 /* Reserve a constant width for the status word so the block (and the LED at
    its left edge) never shifts as the text changes length. Wide enough for the
