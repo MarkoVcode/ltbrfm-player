@@ -274,7 +274,7 @@ button.chip:focus-visible{ outline:2px solid var(--focus); outline-offset:2px }
 /* ---------- Source row ---------- */
 
 .source{
-  margin-top:26px; padding-top:16px;
+  margin-top:22px; padding-top:16px;
   border-top:1px solid rgba(0,0,0,.45);
   box-shadow:0 -1px 0 rgba(255,255,255,.05) inset;
   display:flex; gap:10px; align-items:center; flex-wrap:wrap;
@@ -287,7 +287,7 @@ button.chip:focus-visible{ outline:2px solid var(--focus); outline-offset:2px }
   appearance:none; -webkit-appearance:none;
   background:var(--ink); border:1px solid #0a0908; border-radius:2px;
   box-shadow:0 1px 3px rgba(0,0,0,.8) inset;
-  color:var(--amber); height:26px; padding:0 10px; line-height:24px;
+  color:var(--amber); height:22px; padding:0 10px; line-height:20px;
   font-family:ui-monospace,"SF Mono",Menlo,Consolas,monospace; font-size:11px;
   user-select:text; -webkit-user-select:text;
 }
@@ -296,7 +296,7 @@ button.tune{
   background:linear-gradient(180deg,#4a423a,#2b2620);
   border:none; border-radius:3px; color:#d3c9ba; cursor:pointer;
   font-size:9px; letter-spacing:.24em; text-transform:uppercase;
-  padding:7px 16px;
+  height:22px; padding:0 16px; line-height:22px;
   box-shadow:0 1px 0 rgba(255,255,255,.13) inset, 0 2px 3px rgba(0,0,0,.5);
 }
 button.tune:hover{ color:var(--amber) }
