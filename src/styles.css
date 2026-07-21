@@ -109,6 +109,10 @@ body{
   font-size:9px; letter-spacing:.28em; text-transform:uppercase;
   color:var(--concrete-dim);
 }
+/* Reserve a constant width for the status word so the block (and the LED at
+   its left edge) never shifts as the text changes length. Wide enough for the
+   longest label, STANDBY. */
+#txLabel{ display:inline-block; min-width:66px; white-space:nowrap }
 .led{
   width:8px;height:8px;border-radius:50%;
   background:#2b1105;
