@@ -216,8 +216,9 @@ function applyState(s: typeof engineState, message?: string) {
 
   txState.classList.toggle("live", s === "live");
   txState.classList.toggle("tuning", s === "tuning");
-  txLabel.textContent =
-    s === "live" ? "On air" : s === "tuning" ? "Tuning" : s === "error" ? "Fault" : "Standby";
+  // The label always reads "Standby"; only the LED signals state
+  // (solid red = idle, pulsing red = on air).
+  txLabel.textContent = "Standby";
 
   btnPlay.setAttribute("aria-pressed", String(s === "live" || s === "tuning"));
   icoPlay.querySelector("path")!.setAttribute("d", playing ? PAUSE_PATH : PLAY_PATH);

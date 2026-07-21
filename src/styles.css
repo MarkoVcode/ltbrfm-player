@@ -114,23 +114,20 @@ body{
    its left edge) never shifts as the text changes length. Wide enough for the
    longest label, STANDBY. */
 #txLabel{ display:inline-block; min-width:66px; white-space:nowrap }
+/* LED is always red and the label always reads "Standby":
+   solid red when not playing, gentle pulse while on air. */
 .led{
   width:8px;height:8px;border-radius:50%;
-  background:#2b1105;
-  box-shadow:0 0 0 1px rgba(0,0,0,.6) inset;
-  transition:background .12s, box-shadow .12s;
+  background:var(--red);
+  box-shadow:0 0 6px rgba(255,63,28,.7), 0 0 0 1px rgba(0,0,0,.4) inset;
 }
 .tx.live .led{
-  background:var(--red);
-  box-shadow:0 0 7px rgba(255,63,28,.85), 0 0 0 1px rgba(0,0,0,.4) inset;
+  animation:ledpulse 2.4s ease-in-out infinite;
 }
-.tx.live{ color:#e8dccb }
-.tx.tuning .led{
-  background:var(--amber);
-  box-shadow:0 0 7px rgba(255,155,33,.7);
-  animation:pulse 1s steps(2,end) infinite;
+@keyframes ledpulse{
+  0%,100%{ opacity:1 }
+  50%{ opacity:.35 }
 }
-@keyframes pulse{ 50%{opacity:.25} }
 
 /* ---------- Display windows ---------- */
 
