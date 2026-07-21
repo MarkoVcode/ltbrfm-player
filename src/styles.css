@@ -91,12 +91,15 @@ body{
   box-shadow:0 1px 0 rgba(255,255,255,.05);
   flex-wrap:wrap;
 }
+/* Wordmark matched to the ltbr.fm site logotype:
+   LTBR (bright, black weight, tight tracking) · amber period · FM dimmed. */
 .brand{
-  font-size:19px; font-weight:800; letter-spacing:.22em;
-  color:#d8d0c4;
-  text-shadow:0 1px 0 rgba(0,0,0,.8);
+  font-size:21px; font-weight:900; letter-spacing:-.02em;
+  color:#f4efe6;
+  text-shadow:0 1px 0 rgba(0,0,0,.6);
 }
-.brand em{ color:var(--amber); font-style:normal }
+.brand .dot{ color:var(--amber) }
+.brand .fm{ color:rgba(244,239,230,.55) }
 .strap{
   font-size:9px; letter-spacing:.34em; text-transform:uppercase;
   color:var(--concrete-dim); flex:1; white-space:nowrap;
