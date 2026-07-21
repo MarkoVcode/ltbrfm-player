@@ -8,6 +8,7 @@ pub mod output;
 pub mod spectrum;
 pub mod stream;
 pub mod update;
+pub mod window_menu;
 
 use engine::{Engine, PRESETS};
 use tauri::{Manager, State};
@@ -62,6 +63,14 @@ fn open_download_page() {
     update::open_download_page();
 }
 
+/// Try to open the window manager's own window menu at (x, y), webview
+/// coordinates. Returns false where no WM menu is available (non-Linux, or a
+/// WM without the protocol) so the frontend can fall back to its HTML menu.
+#[tauri::command]
+fn show_window_menu(window: tauri::WebviewWindow, x: f64, y: f64) -> bool {
+    window_menu::show(window, x, y)
+}
+
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
     tauri::Builder::default()
@@ -81,6 +90,7 @@ pub fn run() {
             set_preamp,
             apply_preset,
             open_download_page,
+            show_window_menu,
         ])
         .run(tauri::generate_context!())
         .expect("error while running LTBR·FM Receiver");

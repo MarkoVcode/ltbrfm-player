@@ -1894,6 +1894,8 @@ name = "ltbrfm-player"
 version = "0.1.2"
 dependencies = [
  "cpal",
+ "gdk",
+ "gtk",
  "reqwest 0.12.28",
  "ringbuf",
  "rubato",

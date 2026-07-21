@@ -391,6 +391,61 @@ for (const sel of DRAG_REGIONS) {
   });
 }
 
+// ---- context menu: window options ------------------------------------------
+
+// Right-click anywhere on the faceplate opens a small window-options menu.
+// Text inputs keep the webview's native menu (cut/copy/paste).
+const ctxMenu = document.getElementById("ctxMenu")!;
+const ctxOnTop = document.getElementById("ctxOnTop")!;
+let alwaysOnTop = false;
+
+function closeCtxMenu() {
+  ctxMenu.classList.remove("open");
+}
+
+function openCtxMenu(cx: number, cy: number) {
+  ctxMenu.classList.add("open");
+  // Clamp so the menu never opens past the window edge.
+  const x = Math.min(cx, window.innerWidth - ctxMenu.offsetWidth - 6);
+  const y = Math.min(cy, window.innerHeight - ctxMenu.offsetHeight - 6);
+  ctxMenu.style.left = Math.max(6, x) + "px";
+  ctxMenu.style.top = Math.max(6, y) + "px";
+  (ctxMenu.querySelector("button") as HTMLButtonElement).focus();
+}
+
+document.addEventListener("contextmenu", (e) => {
+  if ((e.target as HTMLElement).closest("input")) return;
+  e.preventDefault();
+  // Prefer the window manager's own menu (Linux): its "Always on Top" is
+  // applied by the compositor, so it works even on Wayland where an
+  // app-side request is ignored. Fall back to our HTML menu elsewhere.
+  const { clientX, clientY } = e;
+  invoke<boolean>("show_window_menu", { x: clientX, y: clientY })
+    .then((shown) => {
+      if (!shown) openCtxMenu(clientX, clientY);
+    })
+    .catch(() => openCtxMenu(clientX, clientY));
+});
+
+document.addEventListener("pointerdown", (e) => {
+  if (!ctxMenu.contains(e.target as Node)) closeCtxMenu();
+});
+document.addEventListener("keydown", (e) => {
+  if (e.key === "Escape") closeCtxMenu();
+});
+window.addEventListener("blur", closeCtxMenu);
+
+// Note: on Linux/Wayland compositors ignore the keep-above request (no
+// protocol for it); the toggle still reflects what was asked of the OS.
+ctxOnTop.addEventListener("click", () => {
+  alwaysOnTop = !alwaysOnTop;
+  ctxOnTop.setAttribute("aria-checked", String(alwaysOnTop));
+  getCurrentWindow()
+    .setAlwaysOnTop(alwaysOnTop)
+    .catch((e) => console.error("setAlwaysOnTop failed:", e));
+  closeCtxMenu();
+});
+
 // ---- engine events ---------------------------------------------------------
 
 interface StateEvent {

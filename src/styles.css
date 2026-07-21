@@ -382,6 +382,42 @@ button.tune:focus-visible{ outline:2px solid var(--focus); outline-offset:2px }
   min-height:15px;
 }
 
+/* ---------- Context menu ---------- */
+
+.ctx{
+  position:fixed; z-index:100; display:none;
+  min-width:150px; padding:4px;
+  background:linear-gradient(180deg,#28231e,#1d1916);
+  border:1px solid #0a0908; border-radius:3px;
+  box-shadow:
+    0 1px 0 rgba(255,255,255,.07) inset,
+    0 6px 18px rgba(0,0,0,.6);
+}
+.ctx.open{ display:block }
+
+button.ctx-item{
+  display:flex; align-items:center; gap:9px; width:100%;
+  background:none; border:none; cursor:pointer;
+  padding:7px 10px; border-radius:2px;
+  color:var(--concrete); font-family:inherit;
+  font-size:9px; letter-spacing:.2em; text-transform:uppercase;
+  white-space:nowrap;
+}
+button.ctx-item:hover{ background:#14110d; color:var(--amber) }
+button.ctx-item:focus-visible{ outline:2px solid var(--focus); outline-offset:-2px }
+
+/* Recessed LED that lights amber when the option is engaged. */
+.ctx-led{
+  width:7px;height:7px;border-radius:50%;
+  background:#0b0a09;
+  box-shadow:0 1px 1px rgba(0,0,0,.8) inset, 0 1px 0 rgba(255,255,255,.05);
+  flex:none;
+}
+button.ctx-item[aria-checked="true"] .ctx-led{
+  background:var(--amber);
+  box-shadow:0 0 5px rgba(255,155,33,.8), 0 0 0 1px rgba(0,0,0,.4) inset;
+}
+
 @media (prefers-reduced-motion: reduce){
   *{ animation:none !important; transition:none !important }
 }
