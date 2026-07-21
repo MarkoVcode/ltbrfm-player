@@ -107,10 +107,25 @@ Produced artifacts: `.dmg` (macOS, Intel + Apple Silicon), `.msi` and NSIS
 
 ### Code signing
 
-Binaries are **unsigned** by default, so first launch shows an
-"unidentified developer" warning. To sign & notarize, add the documented
-secrets (`APPLE_*` for macOS; a Windows Authenticode certificate) referenced in
-the release workflow — no workflow changes are required.
+Binaries are **unsigned** by default, which triggers OS warnings on first
+launch of each version:
+
+- **macOS** (Sequoia and later) reports unsigned downloads as *"damaged and
+  can't be opened"* — nothing is damaged; it's Gatekeeper's verdict for
+  unsigned internet downloads, and the old right-click → Open workaround no
+  longer applies. After dragging the app to Applications, clear the
+  quarantine flag once per update:
+
+  ```bash
+  xattr -cr "/Applications/LTBR FM Receiver.app"
+  ```
+
+- **Windows**: SmartScreen → "More info" → "Run anyway".
+
+To remove the warnings permanently, sign & notarize: add the documented
+secrets (`APPLE_*` for macOS — requires an Apple Developer account — and a
+Windows Authenticode certificate) referenced in the release workflow; no
+workflow changes are required.
 
 ## License
 

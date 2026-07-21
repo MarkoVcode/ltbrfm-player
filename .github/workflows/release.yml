@@ -108,8 +108,12 @@ jobs:
             ### Downloads
 
             `.dmg` (macOS — Apple Silicon & Intel) · `.msi` / `-setup.exe` (Windows) ·
-            `.AppImage` / `.deb` / `.rpm` (Linux). Builds are unsigned — on macOS use
-            right-click → Open on first launch; on Windows choose "More info → Run anyway".
+            `.AppImage` / `.deb` / `.rpm` (Linux). Builds are unsigned:
+
+            - **macOS** reports unsigned downloads as "damaged". After dragging the app
+              to Applications, clear the quarantine flag once per update:
+              `xattr -cr "/Applications/LTBR FM Receiver.app"`
+            - **Windows**: SmartScreen → "More info" → "Run anyway".
           releaseDraft: false
           prerelease: false
           args: ${{ matrix.args }}
