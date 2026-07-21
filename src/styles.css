@@ -15,6 +15,7 @@
 }
 
 *{box-sizing:border-box}
+button{ appearance:none; -webkit-appearance:none }
 
 html,body{height:100%}
 body{
@@ -281,9 +282,12 @@ button.chip:focus-visible{ outline:2px solid var(--focus); outline-offset:2px }
 .source label{ font-size:8px; letter-spacing:.3em; text-transform:uppercase; color:var(--concrete-dim) }
 .source input{
   flex:1; min-width:200px;
+  /* Force our own box model — WebKitGTK otherwise gives <input> a taller
+     native height that ignores padding, making the field look oversized. */
+  appearance:none; -webkit-appearance:none;
   background:var(--ink); border:1px solid #0a0908; border-radius:2px;
   box-shadow:0 1px 3px rgba(0,0,0,.8) inset;
-  color:var(--amber); padding:5px 10px;
+  color:var(--amber); height:26px; padding:0 10px; line-height:24px;
   font-family:ui-monospace,"SF Mono",Menlo,Consolas,monospace; font-size:11px;
   user-select:text; -webkit-user-select:text;
 }
