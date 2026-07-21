@@ -274,7 +274,7 @@ button.chip:focus-visible{ outline:2px solid var(--focus); outline-offset:2px }
 /* ---------- Source row ---------- */
 
 .source{
-  margin-top:22px; padding-top:16px;
+  margin-top:40px; padding-top:16px;
   border-top:1px solid rgba(0,0,0,.45);
   box-shadow:0 -1px 0 rgba(255,255,255,.05) inset;
   display:flex; gap:10px; align-items:center; flex-wrap:wrap;
