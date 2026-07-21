@@ -94,12 +94,16 @@ jobs:
           releaseBody: |
             ### What's new
 
-            - **Fixed: the dot-matrix scrolling display now renders identically on every OS.**
-              It previously rasterised system fonts at 7px, so the dot pattern depended on each
-              platform's font stack and antialiasing — garbled to a different degree on Linux,
-              Windows and macOS. The scroller now uses a built-in 5×7 LED bitmap font
-              (A–Z, 0–9, punctuation; accents and typographic quotes normalised), making the
-              display pixel-identical and crisp everywhere.
+            - **Built-in update check.** The receiver now checks ltbr.fm for new releases
+              (on startup and every 4 hours). When one is available, the standby indicator
+              becomes an amber blinking "New version" alert that opens the download page.
+            - **Identical rendering on every OS.** The UI fonts (Inter + JetBrains Mono)
+              are now bundled, so text metrics — and the layout maths that depend on
+              them — can no longer differ between Linux, Windows and macOS. Fixes the
+              misaligned standby LED on Linux.
+            - **The window sizes itself to the faceplate.** No more hard-coded height:
+              the app measures its content at startup and fits the window exactly,
+              eliminating the extra bottom margin seen on Linux.
 
             ### Downloads
 
