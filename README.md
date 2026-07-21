@@ -7,6 +7,10 @@ LED spectrum analyser, wrapped in a brushed-metal "rack unit" interface.
 ![built with Tauri](https://img.shields.io/badge/built%20with-Tauri%202-24C8DB)
 ![Rust](https://img.shields.io/badge/audio%20engine-Rust-orange)
 
+<p align="center">
+  <img src="docs/screenshot.png" alt="LTBR·FM Receiver — on air, tuned to stream.ltbr.fm, spectrum analyser live" width="720">
+</p>
+
 ## What it is
 
 - **Native Rust audio engine.** The stream is decoded (MP3), equalised and
