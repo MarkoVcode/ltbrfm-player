@@ -44,12 +44,18 @@ jobs:
         if: matrix.platform == 'ubuntu-22.04'
         run: |
           sudo apt-get update
+          # The gstreamer plugin packages are copied into the AppImage by
+          # bundleMediaFramework — without them WebKit's Web Audio (the
+          # inter-station static) is silent in the released AppImage.
           sudo apt-get install -y \
             libwebkit2gtk-4.1-dev \
             libappindicator3-dev \
             librsvg2-dev \
             patchelf \
-            libasound2-dev
+            libasound2-dev \
+            gstreamer1.0-plugins-base \
+            gstreamer1.0-plugins-good \
+            gstreamer1.0-alsa
 
       - name: Setup Node
         uses: actions/setup-node@v4
@@ -94,16 +100,14 @@ jobs:
           releaseBody: |
             ### What's new
 
-            - **Built-in update check.** The receiver now checks ltbr.fm for new releases
-              (on startup and every 4 hours). When one is available, the standby indicator
-              becomes an amber blinking "New version" alert that opens the download page.
-            - **Identical rendering on every OS.** The UI fonts (Inter + JetBrains Mono)
-              are now bundled, so text metrics — and the layout maths that depend on
-              them — can no longer differ between Linux, Windows and macOS. Fixes the
-              misaligned standby LED on Linux.
-            - **The window sizes itself to the faceplate.** No more hard-coded height:
-              the app measures its content at startup and fits the window exactly,
-              eliminating the extra bottom margin seen on Linux.
+            - **Fixed: silent inter-station static in the Linux AppImage.** The
+              vintage face's tuning static is produced with Web Audio, which
+              WebKit renders through GStreamer — and the AppImage shipped
+              without any GStreamer plugins. The media framework is now
+              bundled (`bundleMediaFramework`), so tuning between stations
+              hisses and crackles like it should.
+            - No changes for Windows, macOS or the Linux .deb/.rpm packages;
+              those rebuilt unchanged.
 
             ### Downloads
 
