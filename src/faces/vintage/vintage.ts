@@ -33,6 +33,12 @@ interface KnobOpts {
   value: number;
   /** pixels of vertical drag for a full sweep */
   travel?: number;
+  /**
+   * Multi-turn mode: number of full cap revolutions to traverse the range
+   * (like a geared tuning capacitor). Switches the pointer gesture to
+   * circular dragging around the knob centre.
+   */
+  turns?: number;
   wheelStep: number;
   keyStep: number;
   format: (v: number) => string;
@@ -48,7 +54,10 @@ function makeKnob(el: HTMLElement, opts: KnobOpts) {
 
   const paint = () => {
     const t = (v - opts.min) / (opts.max - opts.min);
-    cap.style.transform = `rotate(${-KNOB_SWEEP / 2 + t * KNOB_SWEEP}deg)`;
+    const deg = opts.turns
+      ? t * opts.turns * 360 // geared: several full revolutions end-to-end
+      : -KNOB_SWEEP / 2 + t * KNOB_SWEEP;
+    cap.style.transform = `rotate(${deg}deg)`;
     el.setAttribute("aria-valuenow", String(Math.round(v * 100) / 100));
     el.setAttribute("aria-valuetext", opts.format(v));
     opts.onInput(v);
@@ -61,17 +70,34 @@ function makeKnob(el: HTMLElement, opts: KnobOpts) {
 
   let dragY = 0;
   let dragV = 0;
+  let dragA = 0; // last pointer angle around the knob centre (degrees)
+  const angleOf = (e: PointerEvent) => {
+    const r = el.getBoundingClientRect();
+    return Math.atan2(e.clientY - (r.top + r.height / 2), e.clientX - (r.left + r.width / 2)) * 180 / Math.PI;
+  };
   el.addEventListener("pointerdown", (e) => {
     el.setPointerCapture(e.pointerId);
     dragY = e.clientY;
     dragV = v;
+    if (opts.turns) dragA = angleOf(e);
     el.focus();
     e.preventDefault();
   });
   el.addEventListener("pointermove", (e) => {
     if (!el.hasPointerCapture(e.pointerId)) return;
-    const dy = dragY - e.clientY; // up = clockwise = increase
-    v = Math.max(opts.min, Math.min(opts.max, dragV + (dy / travel) * (opts.max - opts.min)));
+    if (opts.turns) {
+      // circular drag: follow the finger around the cap; each full lap
+      // advances the value by range/turns, like a real geared tuner
+      const a = angleOf(e);
+      let da = a - dragA;
+      if (da > 180) da -= 360;
+      if (da < -180) da += 360;
+      dragA = a;
+      v = Math.max(opts.min, Math.min(opts.max, v + (da / 360) * (opts.max - opts.min) / opts.turns));
+    } else {
+      const dy = dragY - e.clientY; // up = clockwise = increase
+      v = Math.max(opts.min, Math.min(opts.max, dragV + (dy / travel) * (opts.max - opts.min)));
+    }
     paint();
   });
   el.addEventListener("wheel", (e) => {
@@ -119,7 +145,6 @@ let vuL: VUMeter;
 let vuR: VUMeter;
 const noise = new StaticNoise();
 
-let tuneKnob: { set(v: number): void; get(): number };
 let volKnob: { set(v: number): void; get(): number };
 
 // ---- tuning / crossfade logic -------------------------------------------------
@@ -248,15 +273,10 @@ function activate() {
   volKnob.set(player.getUserVolume() * 100);
   syncMuteButton();
 
-  // If a stream is already up (started on the default face), come in locked
-  // on the station; otherwise the set starts cold, needle off-station.
-  const st = player.getState();
-  if (st === "live" || st === "tuning") {
-    tunedFreq = needleFreq = STATION_FREQ;
-    tuneKnob.set(STATION_FREQ);
-    stationHeld = true;
-    setPowered(true);
-  }
+  // Face switches always land on a cold set: anything playing on the default
+  // face is stopped and the receiver comes in powered off.
+  if (powered) setPowered(false);
+  else player.stop();
   last = 0;
   if (!raf) raf = requestAnimationFrame(frame);
 }
@@ -264,6 +284,9 @@ function activate() {
 function deactivate() {
   active = false;
   if (raf) { cancelAnimationFrame(raf); raf = 0; }
+  // power down the set (stops the stream) before handing over
+  if (powered) setPowered(false);
+  else player.stop();
   moveEqOut();
   noise.suspend();
   player.setSignalFactor(1); // default face gets full-volume behaviour back
@@ -281,9 +304,9 @@ export function initVintage() {
   vuL = new VUMeter(document.getElementById("vVuL") as HTMLCanvasElement, "LEFT");
   vuR = new VUMeter(document.getElementById("vVuR") as HTMLCanvasElement, "RIGHT");
 
-  tuneKnob = makeKnob(document.getElementById("vknobTune")!, {
+  makeKnob(document.getElementById("vknobTune")!, {
     min: F_MIN, max: F_MAX, value: OFF_STATION_FREQ,
-    travel: 320,
+    turns: 3, // three full revolutions end-to-end, ~7 MHz per turn
     wheelStep: 0.05,
     keyStep: 0.05,
     format: (f) => f.toFixed(2) + " MHz",
