@@ -9,6 +9,8 @@
 import { listen } from "@tauri-apps/api/event";
 import { getCurrentWindow } from "@tauri-apps/api/window";
 import { LogicalSize } from "@tauri-apps/api/dpi";
+import { invoke } from "@tauri-apps/api/core";
+import { getVersion } from "@tauri-apps/api/app";
 import {
   initVisuals,
   setScroll,
@@ -307,14 +309,30 @@ player.onMuteChange((m) => {
 
 // EQ show/hide — audio is untouched (the DSP keeps its settings); only the
 // panel collapses, and the window re-fits to the new content height.
+// Each face remembers its own choice across launches.
 const btnEq = document.getElementById("btnEq")!;
 const eqSection = document.querySelector<HTMLElement>(".eq")!;
 let eqVisible = true;
+
+const EQ_KEY = "ltbrfm.eq."; // + face id
+
+function savedEqVisible(f: FaceId): boolean {
+  try {
+    return localStorage.getItem(EQ_KEY + f) !== "hidden";
+  } catch {
+    return true;
+  }
+}
 
 function setEqVisible(v: boolean) {
   eqVisible = v;
   eqSection.classList.toggle("hidden", !v);
   btnEq.setAttribute("aria-pressed", String(v));
+  try {
+    localStorage.setItem(EQ_KEY + currentFace(), v ? "shown" : "hidden");
+  } catch {
+    /* private mode — the choice just won't persist */
+  }
   requestAnimationFrame(() => {
     fitWindow().catch((e) => console.error("fitWindow failed:", e));
   });
@@ -452,8 +470,26 @@ ctxFaceVintage.addEventListener("click", () => {
   closeCtxMenu();
 });
 
+// ---- context menu: exit + version -------------------------------------------
+
+document.getElementById("ctxExit")!.addEventListener("click", () => {
+  closeCtxMenu();
+  invoke("quit").catch((e) => console.error("quit failed:", e));
+});
+
+const ctxVersion = document.getElementById("ctxVersion")!;
+getVersion()
+  .then((v) => {
+    ctxVersion.textContent = "v" + v;
+  })
+  .catch(() => {
+    ctxVersion.textContent = "";
+  });
+
 onFaceChange((f) => {
   refreshFaceChecks(f);
+  // each face carries its own remembered EQ visibility
+  setEqVisible(savedEqVisible(f));
   // returning to the default face: reflect the shared player state in its
   // controls (the vintage knob may have moved the volume meanwhile)
   if (f === "default") {

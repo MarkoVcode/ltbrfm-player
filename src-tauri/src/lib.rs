@@ -63,6 +63,13 @@ fn open_download_page() {
     update::open_download_page();
 }
 
+/// Quit the whole app, not just the window — the audio engine dies with the
+/// process, so no teardown is needed beyond exiting.
+#[tauri::command]
+fn quit(app: tauri::AppHandle) {
+    app.exit(0);
+}
+
 /// Try to open the window manager's own window menu at (x, y), webview
 /// coordinates. Returns false where no WM menu is available (non-Linux, or a
 /// WM without the protocol) so the frontend can fall back to its HTML menu.
@@ -91,6 +98,7 @@ pub fn run() {
             apply_preset,
             open_download_page,
             show_window_menu,
+            quit,
         ])
         .run(tauri::generate_context!())
         .expect("error while running LTBR·FM Receiver");

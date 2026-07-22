@@ -100,14 +100,15 @@ jobs:
           releaseBody: |
             ### What's new
 
-            - **Fixed: silent inter-station static in the Linux AppImage.** The
-              vintage face's tuning static is produced with Web Audio, which
-              WebKit renders through GStreamer — and the AppImage shipped
-              without any GStreamer plugins. The media framework is now
-              bundled (`bundleMediaFramework`), so tuning between stations
-              hisses and crackles like it should.
-            - No changes for Windows, macOS or the Linux .deb/.rpm packages;
-              those rebuilt unchanged.
+            - **Exit from the right-click menu.** The context menu now ends
+              with an Exit item that quits the whole app, with the running
+              version stamped (debossed, like the rest of the fascia) below it.
+            - **Each face remembers its EQ panel.** Hiding or showing the
+              equaliser is now saved per face and restored on the next launch,
+              so a compact vintage receiver and a full default rack can
+              coexist.
+            - Menu separators are actually visible now — the divider style had
+              never been defined.
 
             ### Downloads
 

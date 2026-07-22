@@ -406,6 +406,22 @@ button.ctx-item{
 button.ctx-item:hover{ background:#14110d; color:var(--amber) }
 button.ctx-item:focus-visible{ outline:2px solid var(--focus); outline-offset:-2px }
 
+/* Engraved groove between menu sections. */
+.ctx-sep{
+  height:1px; margin:4px 6px;
+  background:var(--ink);
+  box-shadow:0 1px 0 rgba(255,255,255,.06);
+}
+
+/* Version stamp debossed into the faceplate under the last item. */
+.ctx-version{
+  padding:4px 10px 3px; text-align:right;
+  color:#4a443c;
+  text-shadow:0 -1px 1px rgba(0,0,0,.85), 0 1px 0 rgba(255,255,255,.14);
+  font-size:9px; letter-spacing:.2em; text-transform:lowercase;
+  cursor:default; user-select:none;
+}
+
 /* Recessed LED that lights amber when the option is engaged. */
 .ctx-led{
   width:7px;height:7px;border-radius:50%;
