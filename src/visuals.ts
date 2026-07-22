@@ -30,7 +30,12 @@ let scrDims = { w: 300, h: 46 };
 function fitCanvas(cv: HTMLCanvasElement, cssW: number) {
   const dpr = window.devicePixelRatio || 1;
   const w = cssW || cv.clientWidth;
-  const h = parseInt(cv.getAttribute("height")!, 10);
+  // Latch the design height from the markup ONCE. Assigning cv.height below
+  // rewrites the height attribute, so re-reading it on later resizes would
+  // multiply by dpr each time (46 -> 92 -> 184 ... on retina displays),
+  // stretching the canvases — and the window — exponentially.
+  if (!cv.dataset.designH) cv.dataset.designH = cv.getAttribute("height")!;
+  const h = parseInt(cv.dataset.designH, 10);
   cv.width = Math.round(w * dpr);
   cv.height = Math.round(h * dpr);
   cv.style.height = h + "px";
@@ -40,7 +45,11 @@ function fitCanvas(cv: HTMLCanvasElement, cssW: number) {
 }
 
 export function resize() {
+  // A hidden face reports zero/negative widths — sizing canvases from those
+  // would allocate absurd backing stores. Skip; we re-run on face switch.
+  if (spec.offsetParent === null) return;
   const specParentW = spec.parentElement!.clientWidth - 22;
+  if (specParentW <= 0) return;
   specDims = fitCanvas(spec, specParentW > 400 ? 196 : Math.min(196, specParentW));
   spec.style.width = specDims.w + "px";
   scrDims = fitCanvas(scr, scr.parentElement!.clientWidth - 22);
@@ -79,7 +88,9 @@ function drawSpectrum() {
   for (let i = 0; i < BARS; i++) {
     // slight upward tilt so the top end isn't permanently dark
     const tilt = 1 + (i / BARS) * 0.35;
-    const v = Math.min(1, targets[i] * tilt);
+    // Attenuate the drive so the columns live mid-scale and only peaks reach
+    // the red — full-scale bars most of the time read as clipping.
+    const v = Math.min(1, targets[i] * tilt * 0.7);
 
     // attack fast, decay slow — classic analyser ballistics
     levels[i] += (v - levels[i]) * (v > levels[i] ? 0.55 : 0.16);

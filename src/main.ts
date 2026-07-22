@@ -6,7 +6,6 @@
 // and reflects engine events back into the display.
 // ---------------------------------------------------------------------------
 
-import { invoke } from "@tauri-apps/api/core";
 import { listen } from "@tauri-apps/api/event";
 import { getCurrentWindow } from "@tauri-apps/api/window";
 import { LogicalSize } from "@tauri-apps/api/dpi";
@@ -18,6 +17,11 @@ import {
   setTuning,
   clearSpectrum,
 } from "./visuals.ts";
+import * as player from "./player.ts";
+import { cmd, DEFAULT_URL } from "./player.ts";
+import { setFace, savedFace, currentFace, onFaceChange, type FaceId } from "./faces.ts";
+import { initVintage } from "./faces/vintage/vintage.ts";
+import "./faces/vintage/vintage.css";
 
 const FREQS = [31, 62, 125, 250, 500, 1000, 2000, 4000, 8000, 16000];
 const MAX_DB = 12;
@@ -28,14 +32,6 @@ const PRESETS: Record<string, number[]> = {
   bass:   [8, 7, 5, 2, 0, 0, 0, 0, 1, 2],
   voice:  [-4, -3, 0, 3, 5, 5, 3, 1, -1, -2],
 };
-
-const DEFAULT_URL = "https://stream.ltbr.fm/live";
-
-// Fire-and-forget command helper — the engine is authoritative, so a failed
-// command must never take down the UI.
-function cmd(name: string, args?: Record<string, unknown>): void {
-  invoke(name, args).catch((e) => console.error(`cmd ${name} failed:`, e));
-}
 
 // ---- generic fader ---------------------------------------------------------
 
@@ -115,13 +111,11 @@ function makeFader(el: HTMLElement, opts: FaderOpts) {
 
 // ---- volume + mute ---------------------------------------------------------
 
-let muted = false;
-
-makeFader(document.getElementById("volFader")!, {
+const volFader = makeFader(document.getElementById("volFader")!, {
   min: 0, max: 100, value: 80, vertical: false,
   format: (n) => Math.round(n) + "%",
   onChange: (n) => {
-    cmd("set_volume", { level: n / 100 });
+    player.setUserVolume(n / 100);
   },
 });
 
@@ -286,19 +280,15 @@ function fault(msg: string) {
 function play() {
   fault("");
   const url = streamUrl.value.trim() || DEFAULT_URL;
-  applyState("tuning", "acquiring…");
-  cmd("play", { url });
+  player.play(url); // emits "tuning" back through onState
 }
 
 function pause() {
-  cmd("pause");
-  applyState("standby", "paused");
+  player.pause();
 }
 
 function stop() {
-  cmd("stop");
-  nowPlaying = "";
-  applyState("standby");
+  player.stop();
 }
 
 btnPlay.addEventListener("click", () => {
@@ -309,9 +299,10 @@ document.getElementById("btnStop")!.addEventListener("click", stop);
 
 const btnMute = document.getElementById("btnMute")!;
 btnMute.addEventListener("click", () => {
-  muted = !muted;
-  btnMute.setAttribute("aria-pressed", String(muted));
-  cmd("set_mute", { muted });
+  player.setMuted(!player.getMuted());
+});
+player.onMuteChange((m) => {
+  btnMute.setAttribute("aria-pressed", String(m));
 });
 
 // EQ show/hide — audio is untouched (the DSP keeps its settings); only the
@@ -349,10 +340,12 @@ streamUrl.addEventListener("keydown", (e) => {
 });
 
 // Keyboard: space toggles, M mutes — but not while typing or on a slider.
+// Space transport is a default-face affordance; on the vintage face the
+// power key and tuning knob own the audio lifecycle.
 document.addEventListener("keydown", (e) => {
   const t = e.target as HTMLElement;
   if (t.matches("input, [role=slider]")) return;
-  if (e.code === "Space") {
+  if (e.code === "Space" && currentFace() === "default") {
     e.preventDefault();
     if (engineState === "live" || engineState === "tuning") pause();
     else play();
@@ -416,15 +409,9 @@ function openCtxMenu(cx: number, cy: number) {
 document.addEventListener("contextmenu", (e) => {
   if ((e.target as HTMLElement).closest("input")) return;
   e.preventDefault();
-  // Prefer the window manager's own menu (Linux): its "Always on Top" is
-  // applied by the compositor, so it works even on Wayland where an
-  // app-side request is ignored. Fall back to our HTML menu elsewhere.
-  const { clientX, clientY } = e;
-  invoke<boolean>("show_window_menu", { x: clientX, y: clientY })
-    .then((shown) => {
-      if (!shown) openCtxMenu(clientX, clientY);
-    })
-    .catch(() => openCtxMenu(clientX, clientY));
+  // Always use our own HTML menu: it carries app-level items (face
+  // selection) that a window manager's menu can never show.
+  openCtxMenu(e.clientX, e.clientY);
 });
 
 document.addEventListener("pointerdown", (e) => {
@@ -446,27 +433,52 @@ ctxOnTop.addEventListener("click", () => {
   closeCtxMenu();
 });
 
-// ---- engine events ---------------------------------------------------------
+// ---- context menu: faces ----------------------------------------------------
 
-interface StateEvent {
-  state: "standby" | "tuning" | "live" | "error";
-  message?: string;
+const ctxFaceDefault = document.getElementById("ctxFaceDefault")!;
+const ctxFaceVintage = document.getElementById("ctxFaceVintage")!;
+
+function refreshFaceChecks(f: FaceId) {
+  ctxFaceDefault.setAttribute("aria-checked", String(f === "default"));
+  ctxFaceVintage.setAttribute("aria-checked", String(f === "vintage"));
 }
 
-listen<StateEvent>("state", (e) => {
-  applyState(e.payload.state, e.payload.message);
-  if (e.payload.state === "error" && e.payload.message) fault(e.payload.message);
-  else if (e.payload.state !== "error") fault("");
+ctxFaceDefault.addEventListener("click", () => {
+  setFace("default");
+  closeCtxMenu();
+});
+ctxFaceVintage.addEventListener("click", () => {
+  setFace("vintage");
+  closeCtxMenu();
 });
 
-listen<{ title: string }>("nowplaying", (e) => {
-  nowPlaying = e.payload.title || "";
+onFaceChange((f) => {
+  refreshFaceChecks(f);
+  // returning to the default face: reflect the shared player state in its
+  // controls (the vintage knob may have moved the volume meanwhile)
+  if (f === "default") {
+    volFader.set(player.getUserVolume() * 100);
+  }
+  requestAnimationFrame(() => {
+    fitWindow().catch((e) => console.error("fitWindow failed:", e));
+  });
+});
+
+// ---- engine events ---------------------------------------------------------
+
+player.onState((s, message) => {
+  nowPlaying = player.getNowPlaying();
+  applyState(s, message);
+});
+
+player.onNowPlaying((title) => {
+  nowPlaying = title;
   if (engineState === "live") applyState("live");
 });
 
-listen<{ message: string }>("fault", (e) => fault(e.payload.message));
+player.onFault((m) => fault(m));
 
-listen<number[]>("spectrum", (e) => setSpectrum(e.payload));
+player.onSpectrum((bars) => setSpectrum(bars));
 
 // ---- boot ------------------------------------------------------------------
 
@@ -497,13 +509,20 @@ async function fitWindow(attempt = 0) {
     }
     return;
   }
-  const target = Math.ceil(face.offsetHeight) + 2; // + unit border
+  // Measure whichever face is active: the default fascia plus the unit
+  // border, or the vintage receiver's full case.
+  const target = currentFace() === "vintage"
+    ? Math.ceil(document.getElementById("faceVintage")!.offsetHeight)
+    : Math.ceil(face.offsetHeight) + 2; // + unit border
   if (Math.abs(window.innerHeight - target) > 1) {
     await win.setSize(new LogicalSize(width, target));
   }
 }
 
+player.initPlayer();
 initVisuals();
+initVintage();
+setFace(savedFace());
 applyState("standby");
 requestAnimationFrame(() => {
   fitWindow().catch((e) => console.error("fitWindow failed:", e));

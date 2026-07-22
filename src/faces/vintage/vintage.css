@@ -1,0 +1,247 @@
+/* ---------------------------------------------------------------------------
+   vintage.css — the "Wavemaster" face: early-80s British FM receiver.
+
+   Rendering approach: photoreal plugin-GUI technique — layered gradients for
+   brushed aluminium and knurled metal, multiple box-shadows for bevels, rim
+   light and ambient occlusion, radial highlights for glass. No image assets.
+   NB: 1px repeating gradients moiré on WebKitGTK (see styles.css), so all
+   "grain" here uses ≥3px pitch at very low alpha, or smooth sheens.
+--------------------------------------------------------------------------- */
+
+.vunit{
+  /* walnut sleeve around the fascia */
+  padding:12px 14px;
+  background:
+    linear-gradient(93deg, rgba(255,255,255,.06), rgba(0,0,0,0) 25%, rgba(0,0,0,.22) 78%, rgba(0,0,0,.4)),
+    repeating-linear-gradient(88deg, #3d2a1b 0 7px, #452f1e 7px 13px, #38261a 13px 22px),
+    #3d2a1b;
+  box-shadow:0 0 0 1px #17100a inset;
+}
+
+.vface{
+  position:relative;
+  padding:18px 24px 20px;
+  border-radius:3px;
+  color:#3a3630;
+  /* champagne brushed aluminium */
+  background:
+    linear-gradient(180deg, rgba(255,255,255,.5) 0%, rgba(255,255,255,0) 5%, rgba(0,0,0,0) 94%, rgba(0,0,0,.28) 100%),
+    linear-gradient(90deg, rgba(255,255,255,.18) 0%, rgba(255,255,255,0) 12%, rgba(0,0,0,0) 85%, rgba(0,0,0,.12) 100%),
+    repeating-linear-gradient(180deg, rgba(255,255,255,.028) 0 3px, rgba(0,0,0,.028) 3px 6px),
+    linear-gradient(180deg, #cfc9bb 0%, #c2bcae 45%, #b7b0a1 100%);
+  box-shadow:
+    0 1px 0 rgba(255,255,255,.55) inset,
+    0 -1px 0 rgba(0,0,0,.35) inset,
+    0 0 0 1px #6d6255 inset,
+    0 2px 8px rgba(0,0,0,.55);
+}
+
+/* ---------- top row: brand + VU meters ---------- */
+
+.vtop{
+  display:flex; align-items:stretch; gap:18px;
+  margin-bottom:14px;
+}
+
+.vbrand{ display:flex; flex-direction:column; justify-content:center; gap:6px; flex:1; min-width:0 }
+.vbrand .vname{
+  font-family:"Inter",sans-serif;
+  font-weight:900; font-size:26px; letter-spacing:.01em;
+  /* engraved metal lettering */
+  color:#2e2a25;
+  text-shadow:0 1px 0 rgba(255,255,255,.45), 0 -1px 0 rgba(0,0,0,.3);
+  white-space:nowrap;
+}
+.vbrand .vname i{ font-style:normal; color:#8f2f1d }
+.vbrand small{
+  font-size:8px; font-weight:600; letter-spacing:.32em; text-transform:uppercase;
+  color:#57503f;
+  text-shadow:0 1px 0 rgba(255,255,255,.4);
+  white-space:nowrap;
+}
+
+.vmeters{ display:flex; gap:12px }
+.vmeter{
+  width:132px; height:82px;
+  border-radius:4px;
+  padding:3px;
+  /* black meter bezel with a chrome lip */
+  background:linear-gradient(180deg,#3c3831,#181512);
+  box-shadow:
+    0 1px 0 rgba(255,255,255,.5),
+    0 1px 0 rgba(255,255,255,.12) inset,
+    0 0 0 1px #0c0a08 inset,
+    0 2px 4px rgba(0,0,0,.4);
+}
+.vmeter canvas{
+  display:block; width:100%; height:100%;
+  border-radius:2px;
+  box-shadow:0 2px 6px rgba(0,0,0,.5) inset;
+}
+
+/* ---------- dial ---------- */
+
+.vdial-bezel{
+  position:relative;
+  border-radius:4px;
+  padding:4px;
+  background:linear-gradient(180deg,#38342d,#15120f 60%,#26221c);
+  box-shadow:
+    0 1px 0 rgba(255,255,255,.5),
+    0 1px 0 rgba(255,255,255,.1) inset,
+    0 0 0 1px #0c0a08 inset,
+    0 3px 6px rgba(0,0,0,.35);
+  margin-bottom:16px;
+}
+.vdial-bezel canvas{
+  display:block; width:100%; height:96px;
+  border-radius:2px;
+}
+/* curved glass over the dial — domed: a glare sheet whose curved lower edge
+   is visible, a specular blob top-left, and bottom fall-off into the bezel */
+.vdial-glass{
+  position:absolute; inset:4px;
+  border-radius:2px;
+  background:
+    radial-gradient(46% 150% at 20% -55%, rgba(255,255,255,.30) 52%, rgba(255,255,255,.07) 66%, rgba(255,255,255,0) 80%),
+    radial-gradient(58% 210% at 65% -110%, rgba(255,255,255,.16) 58%, rgba(255,255,255,.04) 70%, rgba(255,255,255,0) 82%),
+    linear-gradient(180deg, rgba(255,255,255,.10) 0%, rgba(255,255,255,.02) 22%, rgba(255,255,255,0) 45%),
+    radial-gradient(130% 95% at 50% 130%, rgba(0,0,0,.32), rgba(0,0,0,0) 55%);
+  box-shadow:
+    0 4px 12px rgba(0,0,0,.68) inset,
+    0 -2px 7px rgba(0,0,0,.38) inset,
+    0 1px 0 rgba(255,255,255,.20) inset;
+  pointer-events:none;
+}
+
+/* ---------- controls row ---------- */
+
+.vcontrols{
+  display:flex; align-items:center; gap:26px;
+}
+.vgroup{
+  display:flex; flex-direction:column; align-items:center; gap:8px;
+}
+.vgroup .vlbl{
+  font-size:8px; font-weight:700; letter-spacing:.3em; text-transform:uppercase;
+  color:#57503f; text-shadow:0 1px 0 rgba(255,255,255,.4);
+}
+.vkeys-group{ margin-right:auto; align-items:flex-start }
+.vkeys-group .vlbl{ align-self:center }
+.vkeys{ display:flex; gap:8px }
+
+/* rectangular latching piano keys, aluminium caps */
+button.vkey{
+  position:relative;
+  min-width:58px; height:32px;
+  border:none; border-radius:3px; cursor:pointer;
+  font-family:inherit; font-size:8px; font-weight:700;
+  letter-spacing:.18em; color:#3a352d;
+  text-shadow:0 1px 0 rgba(255,255,255,.5);
+  background:
+    linear-gradient(180deg, rgba(255,255,255,.55) 0%, rgba(255,255,255,0) 22%, rgba(0,0,0,0) 75%, rgba(0,0,0,.22) 100%),
+    linear-gradient(180deg,#d4cec0,#b3ac9c);
+  box-shadow:
+    0 1px 0 rgba(255,255,255,.6) inset,
+    0 -1px 0 rgba(0,0,0,.25) inset,
+    0 0 0 1px #7a7060 inset,
+    0 3px 0 #8a8172,
+    0 4px 5px rgba(0,0,0,.45);
+  transition:transform .06s, box-shadow .06s;
+}
+button.vkey:hover{ filter:brightness(1.04) }
+button.vkey:active,
+button.vkey[aria-pressed="true"]{
+  transform:translateY(2px);
+  box-shadow:
+    0 1px 0 rgba(255,255,255,.35) inset,
+    0 -1px 0 rgba(0,0,0,.25) inset,
+    0 0 0 1px #6d6255 inset,
+    0 1px 0 #8a8172,
+    0 2px 3px rgba(0,0,0,.4),
+    0 2px 5px rgba(0,0,0,.25) inset;
+}
+button.vkey:focus-visible{ outline:2px solid #8f2f1d; outline-offset:3px }
+
+/* power pilot lamp — jewel red when the set is on */
+button.vkey .vdot{
+  position:absolute; top:5px; right:6px;
+  width:6px; height:6px; border-radius:50%;
+  background:radial-gradient(circle at 35% 30%, #5a2018, #2c0f0a);
+  box-shadow:0 1px 1px rgba(0,0,0,.5) inset, 0 1px 0 rgba(255,255,255,.35);
+}
+.vpowered button.vkey#vPower .vdot{
+  background:radial-gradient(circle at 35% 30%, #ff8a70, #d32b12 60%, #7e1506);
+  box-shadow:0 0 7px rgba(255,60,25,.85), 0 1px 1px rgba(0,0,0,.4) inset;
+}
+
+/* ---------- knobs ---------- */
+
+.vknob{
+  position:relative;
+  width:64px; height:64px; border-radius:50%;
+  cursor:grab; touch-action:none;
+  /* machined base ring + drop shadow into the fascia */
+  background:
+    radial-gradient(circle at 50% 38%, #efeade 0%, #b6ae9e 55%, #6f6759 78%, #47413a 100%);
+  box-shadow:
+    0 1px 0 rgba(255,255,255,.55),
+    0 6px 10px rgba(0,0,0,.4),
+    0 2px 4px rgba(0,0,0,.45),
+    0 0 0 1px rgba(60,52,44,.8);
+}
+.vknob:active{ cursor:grabbing }
+.vknob:focus-visible{ outline:2px solid #8f2f1d; outline-offset:4px }
+
+.vknob-big{ width:92px; height:92px }
+
+/* knurled cap: repeating-conic serration + domed radial highlight */
+.vknob-cap{
+  position:absolute; inset:5px; border-radius:50%;
+  background:
+    radial-gradient(circle at 38% 30%, rgba(255,255,255,.85) 0%, rgba(255,255,255,.15) 26%, rgba(0,0,0,0) 46%),
+    radial-gradient(circle at 50% 50%, #d9d3c6 0 55%, rgba(0,0,0,0) 56%),
+    repeating-conic-gradient(#b7b0a1 0deg 5deg, #837b6c 5deg 10deg),
+    #a29a8a;
+  box-shadow:
+    0 1px 0 rgba(255,255,255,.4) inset,
+    0 -2px 4px rgba(0,0,0,.35) inset,
+    0 1px 2px rgba(0,0,0,.4);
+  will-change:transform;
+}
+/* pointer line on the dome */
+.vknob-mark{
+  position:absolute; left:50%; top:9%;
+  width:3px; height:26%;
+  margin-left:-1.5px;
+  border-radius:2px;
+  background:linear-gradient(180deg,#8f2f1d,#6e2113);
+  box-shadow:0 1px 0 rgba(255,255,255,.35), 0 0 1px rgba(0,0,0,.6);
+}
+.vknob-big .vknob-mark{ top:7%; height:24% }
+
+/* ---------- reparented EQ, vintage skin ---------- */
+
+body.face-vintage .eq{
+  margin-top:18px; padding:14px 16px 12px;
+  border-top:none; border-radius:4px;
+  background:linear-gradient(180deg,#33302a,#211e19);
+  box-shadow:
+    0 1px 0 rgba(255,255,255,.45),
+    0 0 0 1px #0f0d0a inset,
+    0 3px 8px rgba(0,0,0,.4) inset;
+}
+body.face-vintage .eq-head .title{ color:#9a9182 }
+body.face-vintage .eq.hidden{ display:none }
+
+/* ---------- vintage context / shared tweaks ---------- */
+
+.ctx-sep{
+  height:1px; margin:4px 6px;
+  background:rgba(0,0,0,.5);
+  box-shadow:0 1px 0 rgba(255,255,255,.06);
+}
+
+@media (prefers-reduced-motion: reduce){
+  .vknob-cap{ transition:none }
+}

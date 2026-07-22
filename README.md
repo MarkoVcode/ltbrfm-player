@@ -29,6 +29,10 @@ desktop counterpart, downloadable from the same page.
   including the stream's ICY "now playing" track title.
 - **Resilient.** Automatic reconnection with backoff; a dropped network never
   crashes the app.
+- **Two faces.** Right-click → **Face** switches between the default rack unit
+  and a **Vintage 80s** UK receiver: a backlit tuning dial with a real analogue
+  feel — turn the knob through inter-station static until LTBR·FM locks in —
+  plus twin VU meters and rotary volume. The choice is remembered.
 
 Default stream: `https://stream.ltbr.fm/live` (any Icecast/SHOUTcast MP3 URL
 works — type one in the **Stream** box and press **Tune**).

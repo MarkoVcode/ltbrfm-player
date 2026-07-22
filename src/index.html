@@ -8,7 +8,7 @@
 </head>
 <body>
 
-<div class="unit">
+<div class="unit" id="faceDefault">
   <span class="screw tl"></span><span class="screw tr"></span>
   <span class="screw bl"></span><span class="screw br"></span>
 
@@ -90,9 +90,71 @@
   </div>
 </div>
 
+<!-- Vintage 80s UK receiver face — hidden until selected from the menu.
+     Skeuomorphic chrome lives in faces/vintage/vintage.css; the dial glass
+     and VU meters are canvases painted by faces/vintage/*.ts. -->
+<div class="vunit" id="faceVintage" hidden>
+  <div class="vface">
+
+    <div class="vtop">
+      <div class="vbrand">
+        <span class="vname">LTBR<i>.</i>FM</span>
+        <small>Wavemaster 3000 &nbsp;·&nbsp; Stereo FM Receiver &nbsp;·&nbsp; London</small>
+      </div>
+      <div class="vmeters">
+        <div class="vmeter"><canvas id="vVuL"></canvas></div>
+        <div class="vmeter"><canvas id="vVuR"></canvas></div>
+      </div>
+    </div>
+
+    <div class="vdial-bezel">
+      <canvas id="vDial"></canvas>
+      <div class="vdial-glass"></div>
+    </div>
+
+    <div class="vcontrols">
+      <div class="vgroup vkeys-group">
+        <div class="vkeys">
+          <button class="vkey" id="vPower" aria-pressed="false"
+                  title="Power" aria-label="Power">POWER<span class="vdot"></span></button>
+          <button class="vkey" id="vMute" aria-pressed="false"
+                  title="Mute" aria-label="Mute">MUTE</button>
+          <button class="vkey" id="vEq"
+                  title="Graphic equaliser" aria-label="Show or hide the graphic equaliser">EQ</button>
+        </div>
+        <span class="vlbl">Function</span>
+      </div>
+      <div class="vgroup">
+        <div class="vknob" id="vknobVol" tabindex="0" role="slider"
+             aria-label="Volume" aria-valuemin="0" aria-valuemax="100">
+          <div class="vknob-cap"><div class="vknob-mark"></div></div>
+        </div>
+        <span class="vlbl">Volume</span>
+      </div>
+      <div class="vgroup">
+        <div class="vknob vknob-big" id="vknobTune" tabindex="0" role="slider"
+             aria-label="Tuning" aria-valuemin="87.5" aria-valuemax="108.5">
+          <div class="vknob-cap"><div class="vknob-mark"></div></div>
+        </div>
+        <span class="vlbl">Tuning</span>
+      </div>
+    </div>
+
+    <div id="veqSlot"></div>
+
+  </div>
+</div>
+
 <div class="ctx" id="ctxMenu" role="menu" aria-label="Window options">
   <button class="ctx-item" id="ctxOnTop" role="menuitemcheckbox" aria-checked="false">
     <span class="ctx-led"></span>Always on Top
+  </button>
+  <div class="ctx-sep"></div>
+  <button class="ctx-item" id="ctxFaceDefault" role="menuitemradio" aria-checked="true">
+    <span class="ctx-led"></span>Face: Receiver
+  </button>
+  <button class="ctx-item" id="ctxFaceVintage" role="menuitemradio" aria-checked="false">
+    <span class="ctx-led"></span>Face: Vintage 80s
   </button>
 </div>
 
